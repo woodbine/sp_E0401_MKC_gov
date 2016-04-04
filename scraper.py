@@ -84,10 +84,11 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E0401_MKC_gov"
-url = "http://www.milton-keynes.gov.uk/your-council-and-elections/council-information-and-accounts/data-performance-and-spending/Milton-Keynes-Council-spend-archive"
+urls = ["https://www.milton-keynes.gov.uk/your-council-and-elections/council-information-and-accounts/data-performance-and-spending/milton-keynes-council-spend",
+       "http://www.milton-keynes.gov.uk/your-council-and-elections/council-information-and-accounts/data-performance-and-spending/Milton-Keynes-Council-spend-archive"]
 errors = 0
 data = []
-
+url = "http://example.com"
 #### READ HTML 1.0
 
 html = urllib2.urlopen(url)
@@ -96,21 +97,41 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-block = soup.find('div', attrs = {'class':'content right'})
-links = block.findAll('a')
-for link in links:
-    if 'Council Spend Data' in link.text:
-        url = link['href']
-        csvfile = link.text.split('Council Spend Data')[-1].split('(CSV)')[0].strip()
-        csvMth = csvfile[:3]
-        csvYr = csvfile.split(' ')[1]
-        if len(csvYr)==2:
-            csvYr = '20'+csvYr
-        if '-' in csvfile:
-            csvMth = 'Q0'
-            csvYr = csvfile[-4:]
-        csvMth = convert_mth_strings(csvMth.upper())
-        data.append([csvYr, csvMth, url])
+for url in urls:
+    html = urllib2.urlopen(url)
+    soup = BeautifulSoup(html, 'lxml')
+    if 'archive' not in url:
+        block = soup.find('ul', attrs = {'class':'documents'})
+        links = block.findAll('a')
+        for link in links:
+            if 'Council Spend Data' in link.text:
+                url = 'https://www.milton-keynes.gov.uk' + link['href']
+                csvfile = link.text.split('Council Spend Data')[-1].split('(')[0].strip()
+                csvMth = csvfile[:3]
+                csvYr = csvfile.split(' ')[1]
+                if len(csvYr)==2:
+                    csvYr = '20'+csvYr
+                if '-' in csvfile:
+                    csvMth = 'Q0'
+                    csvYr = csvfile[-4:]
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, url])
+    else:
+        block = soup.find('div', attrs = {'class':'content right'})
+        links = block.findAll('a')
+        for link in links:
+            if 'Council Spend Data' in link.text:
+                url = link['href']
+                csvfile = link.text.split('Council Spend Data')[-1].split('(CSV)')[0].strip()
+                csvMth = csvfile[:3]
+                csvYr = csvfile.split(' ')[1]
+                if len(csvYr)==2:
+                    csvYr = '20'+csvYr
+                if '-' in csvfile:
+                    csvMth = 'Q0'
+                    csvYr = csvfile[-4:]
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, url])
 
 #### STORE DATA 1.0
 
