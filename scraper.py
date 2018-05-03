@@ -85,8 +85,7 @@ def convert_mth_strings ( mth_string ):
 
 entity_id = "E0401_MKC_gov"
 
-urls =['http://www.milton-keynes.gov.uk/your-council-and-elections/council-information-and-accounts/data-performance-and-spending/milton-keynes-council-spend-2015-16',
-       "http://www.milton-keynes.gov.uk/your-council-and-elections/council-information-and-accounts/data-performance-and-spending/milton-keynes-council-spend-archive",]
+urls =['https://www.milton-keynes.gov.uk/your-council-and-elections/council-information-and-accounts/data-performance-and-spending/milton-keynes-council-spend-archive']
 
 errors = 0
 data = []
@@ -126,7 +125,7 @@ for url in urls:
                 url = link['href']
                 csvfile = link.text.split('Council Spend Data')[-1].split('(CSV)')[0].strip()
                 csvMth = csvfile[:3]
-                csvYr = csvfile.split(' ')[1]
+                csvYr = csvfile.split()[1]
                 if len(csvYr)==2:
                     csvYr = '20'+csvYr
                 if '-' in csvfile:
